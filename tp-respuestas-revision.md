@@ -54,9 +54,9 @@ Las siguientes preguntas evalúan la comprensión del recorrido completo del pro
 
 ### "¿Dónde lo pondrías?" — Situaciones prácticas
 
-**17.** El endpoint iría en el controller, y la quer
+**17.** La ruta genérica iría en el server, el endpoint específico iría en el controller, en service se procesa si existe el curso, y la query en repository que se conecte con la DB.
 
-**18.** El cliente pide que al crear un alumno, si no se manda `fecha_nacimiento`, el sistema ponga la fecha de hoy por defecto. ¿En qué capa pondrías esa lógica y por qué? ¿Es una regla de negocio o es algo de la base de datos?
+**18.** Se pondría en service porque es parte de la lógica de negocio, ya que se esta calculando e igualando y eso excede las responsabilidades de la DB (Las responsabilidades que le asiggnamos nosotros).
 
 **19.** Necesitás que al eliminar un curso, se verifique primero que no tenga alumnos asociados, y si tiene, devolver un error `400` con el mensaje "No se puede eliminar el curso porque tiene alumnos asociados". ¿Dónde pondrías la verificación (la consulta de si tiene alumnos)? ¿Dónde pondrías el `throw new Error(...)`? ¿Y dónde se atraparía ese error para devolver el `400`?
 
