@@ -18,7 +18,7 @@ Las siguientes preguntas evalúan la comprensión del recorrido completo del pro
 
 ### V2 — server-noob-mejorada.js
 
-**5.** En la versión mejorada se reemplazó `Client` por `Pool`. Explicá la diferencia entre ambos: ¿cómo maneja las conexiones cada uno? ¿Cuándo conviene usar `Client` y cuándo `Pool`?
+**5.** Pool a diferencia de client genera varias conexiones que puede ser usadas sin crearlas cada vez. Esto es beneficioso en grandes programas (Varios endpoints) pero excesivo cuando solo se usan algunos endpoints
 
 **6.** ¿Qué es un `Router` de Express y qué problema resuelve en esta versión? ¿Por qué las rutas dentro del router no incluyen `/api/alumnos` y solo definen `''` o `'/:id'`?
 
