@@ -4,15 +4,15 @@ Las siguientes preguntas evalúan la comprensión del recorrido completo del pro
 
 ---
 
-### V1 — server-noob.js
+### V1 — server-noob.js 
 
-**1.** En `server-noob.js`, cada endpoint crea un `new Client(config)`, hace `await client.connect()`, ejecuta la query, y en el `finally` hace `await client.end()`. Explicá con tus palabras qué problema de performance tiene este enfoque cuando la API recibe muchos requests simultáneos.
+**1.** Por cada request crea un nuevo cliente y luego lo borra, esto no solo ralentiza programa sino que al recibir muchos request se puede alcanzar el límite de conexciones simultáneas de pgAdmin y fallar.
 
-**2.** ¿Qué pasa si PostgreSQL está apagado y un request llega a `server-noob.js`? El `client.connect()` falla, y después se ejecuta el `finally` con `await client.end()`. ¿Qué error puede ocurrir y por qué?
+**2.** En el caso que no se haya creado un cliente nuevo exitosamente salta el siguiente error: "Error: Called end on a client that was never connected".
 
-**3.** En `server-noob.js`, si un compañero te dice "el endpoint de crear alumno tiene un bug", tenés que buscarlo en un archivo de ~215 líneas. ¿Por qué esto se vuelve un problema más grave a medida que la aplicación crece? Mencioná también qué pasa con Git cuando dos personas trabajan en el mismo archivo.
+**3.** Cuanto más grande es la API más cuesta encontrar un método específico y modificarlo, además si varias personas quieren realizar cambios, como está todo en un solo archivo daría conflictos el merge.
 
-**4.** Las queries en `server-noob.js` usan parámetros posicionales (`$1`, `$2`, etc.) en vez de concatenar strings. ¿Qué vulnerabilidad se previene con esto y por qué es importante?
+**4.** Esto prevee la inyección del usuario en SQL, limitando que envíe querys de forma libre, lo que sería un error grave.
 
 ---
 
