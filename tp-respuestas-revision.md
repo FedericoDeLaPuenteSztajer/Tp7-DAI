@@ -18,45 +18,43 @@ Las siguientes preguntas evalúan la comprensión del recorrido completo del pro
 
 ### V2 — server-noob-mejorada.js
 
-**5.** Pool a diferencia de client genera varias conexiones que puede ser usadas sin crearlas cada vez. Esto es beneficioso en grandes programas (Varios endpoints) pero excesivo cuando solo se usan algunos endpoints
+**5.** Pool a diferencia de client genera varias conexiones que puede ser usadas sin crearlas cada vez. Esto es beneficioso en grandes programas (Varios endpoints) pero excesivo cuando solo se necesitan algunos endpoints.
 
-**6.** ¿Qué es un `Router` de Express y qué problema resuelve en esta versión? ¿Por qué las rutas dentro del router no incluyen `/api/alumnos` y solo definen `''` o `'/:id'`?
+**6.** En Express, un router permite designar rutas modulares e independientes y permite que en este proyecto se definan únicamente si se pide todo ('') o un id específico ('/:id') dentro de router, ya que el resto se ingreso desde el server.
 
-**7.** En `server-noob-mejorada.js`, el archivo principal tiene solo ~26 líneas. ¿Qué responsabilidad tiene ese archivo ahora? ¿Dónde está la lógica de los endpoints?
+**7.** El server únicamente recibe la url y decide si es un alumno o curso y llama al router para que se ocupe de la lógica y de la conexión con la DB.
 
-**8.** En la versión mejorada desaparece el bloque `finally`. ¿Por qué ya no es necesario cerrar la conexión manualmente al usar `Pool`?
+**8.** Al usar pool ya no hace falta borrar el cliente y el finally no hace falta (Un cambio muy bueno porque podía dar error).
 
 ---
 
 ### V3 — server.js (arquitectura en capas)
 
-**9.** Nombrá las tres capas de la arquitectura y explicá con tus palabras qué responsabilidad tiene cada una. ¿Cuál conoce los `req` y `res` de Express? ¿Cuál conoce el SQL? ¿Cuál tiene las reglas de negocio?
+**9.** Controller: Recibe res y req y llama un servico; Service: Maneja la lógica de negocio y el procesamiento de datos; Repository: Se conecta con la DB y pide/modifica sus datos.
 
-**10.** En `alumnos-service.js`, la edad del alumno se calcula en el service con una función JavaScript, en vez de calcularla en la query SQL. ¿Por qué se eligió calcularla en el service y no en la base de datos?
+**10.** La lógica de negocio debe estar contenida en service, no en SQL. Si se quisiera modificar es mejor hacerlo en JS que meterse en SQL.
 
-**11.** Cuando se crea un alumno con un `id_curso` que no existe, `AlumnosService` llama a `CursosService` para verificarlo. ¿Por qué llama al service de cursos y no directamente al repository de cursos?
+**11.** Se lama al servico de cursos poruqe es un asunto de lógica el comporbar si existe, no debe hacerse en repositorio porque es meramente la conexion con la DB.
 
-**12.** ¿Para qué sirve el archivo `.env` y la librería `dotenv`? ¿Qué problema de las versiones anteriores resuelve? ¿Por qué el archivo `.env` no se sube al repositorio de Git?
+**12.** .env carga la información de la DB y dotenv permite separar esos datos del código fuente (Mayor seguridad y permite no pushear .env) y hace que el puerto no sea harcodeado (Modificable).
 
-**13.** ¿Qué hace `LogHelper` y por qué es mejor que usar `console.log(error)` suelto en cada lugar del código?
+**13.** LogHelper muestra el error exacto y personalizado sin exponer datos internos del sistema, como si pasa con console.log(error).
 
 ---
 
 ### V4 — DbPg y DbMssql
 
-**14.** Mirá `alumnos-repository.js` (versión original) y `alumnos-repository-new.js` (versión refactorizada). ¿Qué código repetido (boilerplate) se eliminó al extraer la clase `DbPg`? Mencioná al menos 3 cosas que ya no aparecen en el repository nuevo.
+**14.** Métodos y variables repetidas: try/catch, Pool, LogHelper. Estos desaparecieron del repositorio y fuerpon a parar a DbPg que ahora se ocupa de la conexión con DB.
 
-**15.** La clase `DbPg` tiene 4 métodos: `queryAll`, `queryOne`, `queryReturnId` y `queryRowCount`. ¿Qué devuelve cada uno y en qué tipo de operación SQL se usa cada uno?
+**15.** queryAll: select que devuelve array con los alumnos/cursos o null; queryOne: select que devuelve un objeto alumno/curso o null; queryReturnId: insert que devuelve el id del nuevo objeto alumno/curso o 0 si fallo; queryRowCount: update o delete que devuelve la cantidad de filas modificadas.
 
-**16.** En los repositories nuevos, la clase se importa como `import Db from './db-pg.js'` (con el nombre `Db`, no `DbPg`). ¿Por qué se usa ese nombre genérico? ¿Qué pasa si mañana querés cambiar de PostgreSQL a SQL Server — cuántas líneas del repository tenés que modificar?
+**16.** Se importa la conexión con la DB elegida, sea PostgreSQL o SQL server. Si se quiere usar uno u otro solo se debe modificar la conexion desde config y no hace falta modificar nada de código (Puede hacerlo alguien que no sepa programar por ejemplo).
 
 ---
 
 ### "¿Dónde lo pondrías?" — Situaciones prácticas
 
-En cada situación, indicá en qué capa lo pondrías (controller, service o repository) y explicá por qué.
-
-**17.** Necesitás agregar un nuevo endpoint `GET /api/alumnos/curso/:idCurso` que devuelva todos los alumnos de un curso. La query sería `SELECT * FROM alumnos WHERE id_curso = $1`. ¿Dónde pondrías esa query? ¿Dónde pondrías la ruta del endpoint? ¿Agregarías algo en el service?
+**17.** El endpoint iría en el controller, y la quer
 
 **18.** El cliente pide que al crear un alumno, si no se manda `fecha_nacimiento`, el sistema ponga la fecha de hoy por defecto. ¿En qué capa pondrías esa lógica y por qué? ¿Es una regla de negocio o es algo de la base de datos?
 
