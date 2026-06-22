@@ -68,18 +68,24 @@ export default class CalificacionesService {
     }
 
     createAsync = async (entity) => {
+        if (!entity) return; // Early return
         console.log(`CalificacionesService.createAsync(${JSON.stringify(entity)})`);
 
-        if (!(await this.validarAlumnoExiste(entity.id_alumno))) {
+        let alumnoExiste = !(await this.validarAlumnoExiste(entity.id_alumno));
+        let materiaExiste = !(await this.validarMateriaExiste(entity.id_materia));
+        let notaExiste = !(this.validarNota(entity.nota));
+        let yaExiste = await this.getByAlumnoIdAsync(entity.id_alumno).id_materia==entity.id_materia;
+
+        if (alumnoExiste) {
             throw new Error(`El alumno con id ${entity.id_alumno} no existe.`);
-        } else if (!(await this.validarMateriaExiste(entity.id_materia))) {
+        } else if (materiaExiste) {
             throw new Error(`La materia con id ${entity.id_materia} no existe.`);
-        } else if (!(validarNota(entity.nota))) {
+        } else if (notaExiste) {
             throw new Error(`Nota ${entity.nota} inválida.`);
-        } else if (await getByAlumnoIdAsync(entity.id_alumno).id_materia==entity.id_materia) {
+        } else if (yaExiste) {
             throw new Error(`La calificacion del alumno con id ${entity.id_alumno} y materia con id ${entity.id_materia} ya existe.`);
         } else {
-            const rowsAffected = await this.AlumnosRepository.createAsync(entity);
+            const rowsAffected = await this.CalificacionesRepository.createAsync(entity);
             return rowsAffected;
         }
     }

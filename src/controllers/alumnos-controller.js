@@ -66,6 +66,7 @@ router.get('/:id', async (req, res) => {
 router.post('', async (req, res) => {
     try {
         let entity = req.body;
+        console.log(entity);
         const newId = await currentService.createAsync(entity);
         if (newId > 0 ){
             res.status(StatusCodes.CREATED).json(newId);
