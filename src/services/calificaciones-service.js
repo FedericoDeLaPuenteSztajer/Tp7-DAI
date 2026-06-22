@@ -1,9 +1,11 @@
 import CalificacionesRepository from '../repositories/calificaciones-repository.js';
+import AlumnosService from './alumnos-service.js';
 
 export default class CalificacionesService {
     constructor() {
         console.log('Estoy en: CalificacionesService.constructor()');
         this.CalificacionesRepository = new CalificacionesRepository();
+        this.AlumnosService = new AlumnosService();
     }
 
     getAllAsync = async () => {
@@ -19,10 +21,22 @@ export default class CalificacionesService {
         return returnEntity;
     }
 
-    getByAlumnoIdAsync = async (id) => {
-        console.log(`CalificacionesService.getByAlumnoIdAsync(${id})`);
-        const returnEntity = await this.CalificacionesRepository.getByAlumnoIdAsync(id);
+    getByAlumnoIdAsync = async (idAlumno) => {
+        console.log(`CalificacionesService.getByAlumnoIdAsync(${idAlumno})`);
+        
+        await this.validarAlumnoExiste(idAlumno);
+
+        const returnEntity = await this.CalificacionesRepository.getByAlumnoIdAsync(idAlumno);
         return returnEntity;
+    }
+
+    validarAlumnoExiste = async (idAlumno) => {
+        if (!idAlumno) return; // Early return
+
+        const alumno = await this.AlumnosService.getByIdAsync(idAlumno);
+        if (alumno == null) {
+            throw new Error(`El alumno con id ${idAlumno} no existe.`);
+        }
     }
 
     /*
@@ -50,15 +64,6 @@ export default class CalificacionesService {
         console.log(`AlumnosService.deleteByIdAsync(${id})`);
         const rowsAffected = await this.AlumnosRepository.deleteByIdAsync(id);
         return rowsAffected;
-    }
-
-    validarCursoExiste = async (idCurso) => {
-        if (!idCurso) return; // Early return
-
-        const curso = await this.CursosService.getByIdAsync(idCurso);
-        if (curso == null) {
-            throw new Error(`El curso con id ${idCurso} no existe.`);
-        }
     }
     */
 }

@@ -48,12 +48,12 @@ export default class CalificacionesRepository {
         return returnEntity;
     }
 
-    getByAlumnoIdAsync = async (id) => {
-        console.log(`CalificacionesRepository.getByIdAsync(${id})`);
+    getByAlumnoIdAsync = async (idAlumno) => {
+        console.log(`CalificacionesRepository.getByIdAsync(${idAlumno})`);
         let returnEntity = null;
         try {
-            const sql = `SELECT alumno_id, c.*, m.nombre AS "materia_nombre" FROM calificaciones c JOIN materias m ON c.id_materia=m.id WHERE alumno_id IN (SELECT id FROM alumnos WHERE id=$1)`;
-            const values = [id];
+            const sql = `SELECT c.*, m.nombre AS "materia_nombre" FROM calificaciones c JOIN materias m ON c.id_materia=m.id WHERE c.id_alumno IN (SELECT id FROM alumnos WHERE id=$1)`;
+            const values = [idAlumno];
             const resultPg = await this.getDBPool().query(sql, values);
             if (resultPg.rows.length > 0) {
                 returnEntity = resultPg.rows[0];
