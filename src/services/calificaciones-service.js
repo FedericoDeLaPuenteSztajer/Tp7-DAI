@@ -9,18 +9,23 @@ export default class CalificacionesService {
     getAllAsync = async () => {
         console.log(`CalificacionesService.getAllAsync()`);
         const returnArray = await this.CalificacionesRepository.getAllAsync();
-        if (returnArray == null) return null;   
+        if (returnArray == null) return null;
         return returnArray;
     }
 
-    /*
     getByIdAsync = async (id) => {
-        console.log(`AlumnosService.getByIdAsync(${id})`);
-        const returnEntity = await this.AlumnosRepository.getByIdAsync(id);
-        // Regla de negocio que agrega la edad.!!!
-        return agregarEdad(returnEntity);
+        console.log(`CalificacionesService.getByIdAsync(${id})`);
+        const returnEntity = await this.CalificacionesRepository.getByIdAsync(id);
+        return returnEntity;
     }
 
+    getByAlumnoIdAsync = async (id) => {
+        console.log(`CalificacionesService.getByAlumnoIdAsync(${id})`);
+        const returnEntity = await this.CalificacionesRepository.getByAlumnoIdAsync(id);
+        return returnEntity;
+    }
+
+    /*
     createAsync = async (entity) => {
         console.log(`AlumnosService.createAsync(${JSON.stringify(entity)})`);
         // Regla de negocio!!!

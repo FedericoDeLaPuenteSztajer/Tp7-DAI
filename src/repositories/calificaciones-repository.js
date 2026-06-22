@@ -31,13 +31,12 @@ export default class CalificacionesRepository {
         }
         return returnArray;
     }
-
-    /*
+    
     getByIdAsync = async (id) => {
-        console.log(`AlumnosRepository.getByIdAsync(${id})`);
+        console.log(`CalificacionesRepository.getByIdAsync(${id})`);
         let returnEntity = null;
         try {
-            const sql = `SELECT * FROM alumnos WHERE id=$1`;
+            const sql = `SELECT c.*, a.nombre AS "nombre_alumno", a.apellido AS "apellido_alumno", m.nombre AS "materia_nombre" FROM calificaciones c JOIN alumnos a ON c.id_alumno=a.id JOIN materias m ON c.id_materia=m.id WHERE c.id=$1`;
             const values = [id];
             const resultPg = await this.getDBPool().query(sql, values);
             if (resultPg.rows.length > 0) {
@@ -49,6 +48,23 @@ export default class CalificacionesRepository {
         return returnEntity;
     }
 
+    getByAlumnoIdAsync = async (id) => {
+        console.log(`CalificacionesRepository.getByIdAsync(${id})`);
+        let returnEntity = null;
+        try {
+            const sql = `SELECT alumno_id, c.*, m.nombre AS "materia_nombre" FROM calificaciones c JOIN materias m ON c.id_materia=m.id WHERE alumno_id IN (SELECT id FROM alumnos WHERE id=$1)`;
+            const values = [id];
+            const resultPg = await this.getDBPool().query(sql, values);
+            if (resultPg.rows.length > 0) {
+                returnEntity = resultPg.rows[0];
+            }
+        } catch (error) {
+            LogHelper.logError(error);
+        }
+        return returnEntity;
+    }
+
+    /*
     createAsync = async (entity) => {
         console.log(`AlumnosRepository.createAsync(${JSON.stringify(entity)})`);
         let newId = 0;
