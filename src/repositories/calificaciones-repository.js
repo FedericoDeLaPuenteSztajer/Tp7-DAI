@@ -31,7 +31,7 @@ export default class CalificacionesRepository {
         }
         return returnArray;
     }
-    
+
     getByIdAsync = async (id) => {
         console.log(`CalificacionesRepository.getByIdAsync(${id})`);
         let returnEntity = null;
@@ -64,30 +64,27 @@ export default class CalificacionesRepository {
         return returnEntity;
     }
 
-    /*
     createAsync = async (entity) => {
-        console.log(`AlumnosRepository.createAsync(${JSON.stringify(entity)})`);
+        console.log(`CalificacionesRepository.createAsync(${JSON.stringify(entity)})`);
         let newId = 0;
 
         try {
-            const sql = ` INSERT INTO alumnos (
-                            nombre              , 
-                            apellido            , 
-                            id_curso            , 
-                            fecha_nacimiento    , 
-                            hace_deportes
+            const sql = ` INSERT INTO calificaciones (
+                            id_alumno,
+                            id_materia, 
+                            nota, 
+                            fecha, 
                         ) VALUES (
                             $1, 
                             $2, 
                             $3, 
-                            $4, 
-                            $5
+                            $4
                         ) RETURNING id`;
-            const values = [entity?.nombre ?? '',
-            entity?.apellido ?? '',
-            entity?.id_curso ?? 0,
-            entity?.fecha_nacimiento ?? null,
-            entity?.hace_deportes ?? 0
+            const values = [
+                entity?.id_alumno ?? '',
+                entity?.id_materia ?? '',
+                entity?.nota ?? 0,
+                entity?.fecha ?? null,
             ];
             const resultPg = await this.getDBPool().query(sql, values);
             newId = resultPg.rows[0].id;
@@ -97,6 +94,7 @@ export default class CalificacionesRepository {
         return newId;
     }
 
+    /*
     updateAsync = async (entity) => {
         console.log(`AlumnosRepository.updateAsync(${JSON.stringify(entity)})`);
         let rowsAffected = 0;

@@ -1,11 +1,24 @@
 import CalificacionesRepository from '../repositories/calificaciones-repository.js';
 import AlumnosService from './alumnos-service.js';
+import MateriasService from './materias-service.js';
+
+function validarNota(nota) {
+    if (!nota) return; // Early return
+    let existe = false;
+
+    if (nota >= 0 || nota <= 10) {
+        existe = true;
+    }
+    
+    return existe;
+}
 
 export default class CalificacionesService {
     constructor() {
         console.log('Estoy en: CalificacionesService.constructor()');
         this.CalificacionesRepository = new CalificacionesRepository();
         this.AlumnosService = new AlumnosService();
+        this.MateriasService = new MateriasService();
     }
 
     getAllAsync = async () => {
@@ -23,32 +36,55 @@ export default class CalificacionesService {
 
     getByAlumnoIdAsync = async (idAlumno) => {
         console.log(`CalificacionesService.getByAlumnoIdAsync(${idAlumno})`);
-        
-        await this.validarAlumnoExiste(idAlumno);
 
-        const returnEntity = await this.CalificacionesRepository.getByAlumnoIdAsync(idAlumno);
-        return returnEntity;
+        if (await this.validarAlumnoExiste(idAlumno)) {
+            throw new Error(`El alumno con id ${idAlumno} no existe.`);
+        } else {
+            const returnEntity = await this.CalificacionesRepository.getByAlumnoIdAsync(idAlumno);
+            return returnEntity;
+        }
     }
 
     validarAlumnoExiste = async (idAlumno) => {
         if (!idAlumno) return; // Early return
+        let exists = false;
 
         const alumno = await this.AlumnosService.getByIdAsync(idAlumno);
         if (alumno == null) {
-            throw new Error(`El alumno con id ${idAlumno} no existe.`);
+            exists = true;
+        }
+        return exists;
+    }
+
+    validarMateriaExiste = async (idMateria) => {
+        if (!idMateria) return; // Early return
+        let exists = false;
+
+        const materia = await this.MateriasService.getByIdAsync(idMateria);
+        if (materia == null) {
+            exists = true;
+        }
+        return exists;
+    }
+
+    createAsync = async (entity) => {
+        console.log(`CalificacionesService.createAsync(${JSON.stringify(entity)})`);
+
+        if (!(await this.validarAlumnoExiste(entity.id_alumno))) {
+            throw new Error(`El alumno con id ${entity.id_alumno} no existe.`);
+        } else if (!(await this.validarMateriaExiste(entity.id_materia))) {
+            throw new Error(`La materia con id ${entity.id_materia} no existe.`);
+        } else if (!(validarNota(entity.nota))) {
+            throw new Error(`Nota ${entity.nota} inválida.`);
+        } else if (await getByAlumnoIdAsync(entity.id_alumno).id_materia==entity.id_materia) {
+            throw new Error(`La calificacion del alumno con id ${entity.id_alumno} y materia con id ${entity.id_materia} ya existe.`);
+        } else {
+            const rowsAffected = await this.AlumnosRepository.createAsync(entity);
+            return rowsAffected;
         }
     }
 
     /*
-    createAsync = async (entity) => {
-        console.log(`AlumnosService.createAsync(${JSON.stringify(entity)})`);
-        // Regla de negocio!!!
-        await this.validarCursoExiste(entity.id_curso);
-        // Si llegue aca es que no hubo un error.
-        const rowsAffected = await this.AlumnosRepository.createAsync(entity);
-        return rowsAffected;
-    }
-
     updateAsync = async (entity) => {
         console.log(`AlumnosService.updateAsync(${JSON.stringify(entity)})`);
         // Regla de Negocio!
